@@ -1,0 +1,31 @@
+# Site settings
+name: 云豆
+email: luoyan35714@126.com
+author: 云豆
+url: https://github.com/playbeans/blog
+resume_site: https://github.com/playbeans/blog
+github: https://github.com/playbeans/blog
+baseurl: "/playbeans"
+description: 极速蜗牛!
+meta_description: 赵振;个人博客;为之则易不为则难;忘记时间
+motto: thanks for all
+banner: 学而不思则罔，思而不学则殆。
+
+#permalink: /:categories/:year/:month/:day/:title/
+permalink: /:year/:month/:day/:title/
+paginate: 10
+
+exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile']
+
+github_username: playbeans
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input:  GFM
+plugins:
+  - jekyll-paginate
+paginate: 5
+
+baidu_analysis: 94be4b0f9fc5d94cc0d0415ea6761ae9
+
