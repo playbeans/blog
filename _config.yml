@@ -5,7 +5,7 @@ author: 云豆
 url: https://github.com/playbeans/blog
 resume_site: https://github.com/playbeans/blog
 github: https://github.com/playbeans/blog
-baseurl: "/playbeans"
+baseurl: "/blog"
 description: 极速蜗牛!
 meta_description: 赵振;个人博客;为之则易不为则难;忘记时间
 motto: thanks for all
@@ -23,6 +23,7 @@ github_username: playbeans
 markdown: kramdown
 kramdown:
   input:  GFM
+  use_coderay: true
 plugins:
   - jekyll-paginate
 paginate: 5
