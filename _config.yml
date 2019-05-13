@@ -28,7 +28,7 @@ plugins:
   - jekyll-paginate
 paginate: 5
 
-baidu_analysis: 94be4b0f9fc5d94cc0d0415ea6761ae9
+baidu_analysis: 7f8d0bdba5a9ac15917a37903729a438
 
 
 theme: jekyll-theme-slate
