@@ -1,14 +1,14 @@
 # Site settings
 name: 云豆
-email: luoyan35714@126.com
+email: 286339409@qq.com
 author: 云豆
 url: https://github.com/playbeans/blog
 resume_site: https://github.com/playbeans/blog
 github: https://github.com/playbeans/blog
 baseurl: "/blog"
-description: 极速蜗牛!
+description: 聚沙成塔!
 meta_description: 赵振;个人博客;为之则易不为则难;忘记时间
-motto: thanks for all
+motto: 大脑最会骗人了.
 banner: 学而不思则罔，思而不学则殆。
 
 #permalink: /:categories/:year/:month/:day/:title/
