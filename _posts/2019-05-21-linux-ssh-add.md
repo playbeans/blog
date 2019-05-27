@@ -3,11 +3,12 @@ layout: post
 title:  "ssh 整理"
 date:   2019-05-13 09:31:01 +0800
 categories: linux
-tag: ssh
+tag: ssh-add
 ---
 
 * content
 {:toc}
+
 
 ## ssh-add 整理
 一般有两个github账号的时候会使用该操作
@@ -37,3 +38,4 @@ tag: ssh
 
 4.查看密匙
 > ssh-add -l
+
