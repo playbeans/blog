@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "hadoopq全分布式HA安装"
-date:   2019-06-03 09:31:01 +0800
+date:   2019-06-22 09:31:01 +0800
 categories: linux
 tag: hadoop
 ---
