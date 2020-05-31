@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="JVM 是什么 JVM　是运行Java代码的假象计算机，包括一套字节码指令，一组寄存器，一个栈，一个堆，一个垃圾回收，一个存储方法域。JVM运行在系统之上，跟硬件没有直接的交互  12341 Java源文件-&gt;编译器-&gt;字节码文件2 字节码文件-&gt;JVM-&gt;机器码执行Class文件分两种，解释执行和编译执行 编辑执行有client和server  JRE Jlib的关系JD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java　JVM">
+<meta property="og:url" content="https://playbeans.github.io/2020/03/21/java-base-2020-03-21-Java-JVM%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="ATM（奥特曼）">
+<meta property="og:description" content="JVM 是什么 JVM　是运行Java代码的假象计算机，包括一套字节码指令，一组寄存器，一个栈，一个堆，一个垃圾回收，一个存储方法域。JVM运行在系统之上，跟硬件没有直接的交互  12341 Java源文件-&gt;编译器-&gt;字节码文件2 字节码文件-&gt;JVM-&gt;机器码执行Class文件分两种，解释执行和编译执行 编辑执行有client和server  JRE Jlib的关系JD">
+<meta property="og:image" content="https://playbeans.github.io/blog/2020/03/21/java-base-2020-03-21-Java-JVM%E5%9F%BA%E7%A1%80/JVM.stack.png">
+<meta property="og:image" content="https://playbeans.github.io/blog/2020/03/21/java-base-2020-03-21-Java-JVM%E5%9F%BA%E7%A1%80/JVM.clean.png">
+<meta property="article:published_time" content="2020-03-21T02:31:01.000Z">
+<meta property="article:modified_time" content="2020-05-31T02:24:09.594Z">
+<meta property="article:author" content="Z">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://playbeans.github.io/blog/2020/03/21/java-base-2020-03-21-Java-JVM%E5%9F%BA%E7%A1%80/JVM.stack.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://playbeans.github.io/2020/03/21/java-base-2020-03-21-Java-JVM基础/"/>
+
+
+
+
+
+  <title>Java　JVM | ATM（奥特曼）</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ATM（奥特曼）</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://playbeans.github.io/blog/2020/03/21/java-base-2020-03-21-Java-JVM%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Z">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ATM（奥特曼）">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java　JVM</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-21T10:31:01+08:00">
+                2020-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h5 id="JVM-是什么"><a href="#JVM-是什么" class="headerlink" title="JVM 是什么"></a>JVM 是什么</h5><blockquote>
+<p>JVM　是运行Java代码的假象计算机，包括一套字节码指令，一组寄存器，一个栈，一个堆，一个垃圾回收，一个存储方法域。JVM运行在系统之上，跟硬件没有直接的交互</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1 Java源文件-&gt;编译器-&gt;字节码文件</span><br><span class="line">2 字节码文件-&gt;JVM-&gt;机器码</span><br><span class="line"></span><br><span class="line">执行Class文件分两种，解释执行和编译执行 编辑执行有client和server</span><br></pre></td></tr></table></figure>
+
+<h5 id="JRE-Jlib的关系"><a href="#JRE-Jlib的关系" class="headerlink" title="JRE Jlib的关系"></a>JRE Jlib的关系</h5><p>JDK:java开发工具包，是整个java的核心，包括JRE,JVM</p>
+<p>JDK=JRE+其他类库</p>
+<p>JRE=JVM+其他</p>
+<h5 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h5><blockquote>
+<p>JVM允许一个应用执行多个线程，JVM线程与原生操作系统线程有直接的映射关系，当线程本地存储，缓冲分配，同步对象，堆栈，程序计数器准备好之后，就会创建一个操作系统远程线程。当Java线程结束，原生线程随之被回收。操作系统负责调度素有的线程，并把他们分配到可用的cpu上。当原生系统的线程初始化完成，就会调用Java线程的run方法。线程结束释放原生线程和Java线程资源。</p>
+</blockquote>
+<p>VM 后台运行的线程系统主要有</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VM thread（虚拟机线程）</td>
+<td>等待JVM到达安全点操作出现，STW（Stop-The-World），线程暂停，线程偏向锁接触</td>
+</tr>
+<tr>
+<td>周期性线程</td>
+<td>负责定时任务，（中断），用来调度周期性操作执行</td>
+</tr>
+<tr>
+<td>GC线程</td>
+<td>只是JVM不同的垃圾回收</td>
+</tr>
+<tr>
+<td>编译器线程</td>
+<td>在运行时把字节码编译成与本地平台相关的机器码</td>
+</tr>
+<tr>
+<td>信号分发线程</td>
+<td>接收JVM的信号，并调用JVM线程</td>
+</tr>
+</tbody></table>
+<h5 id="JVM-内存区域"><a href="#JVM-内存区域" class="headerlink" title="JVM 内存区域"></a>JVM 内存区域</h5><img src="/blog/2020/03/21/java-base-2020-03-21-Java-JVM%E5%9F%BA%E7%A1%80/JVM.stack.png" class="" title="JVM">
+
+<h5 id="JVM内存（栈Stack）线程私有"><a href="#JVM内存（栈Stack）线程私有" class="headerlink" title="JVM内存（栈Stack）线程私有"></a>JVM内存（栈Stack）线程私有</h5><blockquote>
+<ol>
+<li>线程私有Thread local 包含程序计数器，虚拟机栈，本地方法栈</li>
+<li>线程共享 方法区（永久代） 类实例区（java堆heap）</li>
+<li>直接内存（不受JVM GC管理的区域）</li>
+</ol>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.程序计数器 一块小空间，是当前线程的字节码指示器，当前指令地址，是唯一一个没有OOM的区域</span><br><span class="line">2. 虚拟机栈（线程私有），每一个方法的调用都是一个栈贞一次入栈到出栈的过程，（栈贞：局部变量，操作栈，动态链接，返回地址）存在栈中的数据可以共享</span><br><span class="line">3. 本地方法栈 VM中直接调用C的方法</span><br></pre></td></tr></table></figure>
+
+<h5 id="JVM内存（堆Heap）线程共享"><a href="#JVM内存（堆Heap）线程共享" class="headerlink" title="JVM内存（堆Heap）线程共享"></a>JVM内存（堆Heap）线程共享</h5><blockquote>
+<ol>
+<li>堆，线程共享运行时数据，创建的对象，数据都在Java堆内存中，也是垃圾回收的主要区域。由于JVM采取的是分代收集算法，因此从Java堆从<br>GC的角度分为新生代（Eden 8/10，From Survivor 1/10,To Survivor 1/10）和老年代(15次gc到老年代 2/3)</li>
+<li>方法区/永久代 存储被JVM加载的类信息，常量，静态变量，即时编译器变异的代码（永久代的垃圾回收一般是常量池的回收和类型的卸载，因此收益很小）</li>
+</ol>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">运行时常量池是方法区的一部分，常量池是为了避免频繁的创建和销毁对象而影响系统性能，其实现了对象的共享，常量池中相同的字符串变量被合并只占用一个空间</span><br></pre></td></tr></table></figure>
+
+<h5 id="垃圾清理"><a href="#垃圾清理" class="headerlink" title="垃圾清理"></a>垃圾清理</h5><ol>
+<li>新生代使用<u>复制算法</u>，每一次from survivor和to survivor都会互换，清理一次年龄都会加1</li>
+<li>老年代主要存放大对象，以及稳定的对象，所以采用<u>标记清除算法</u>，耗时比较长，会产生碎片</li>
+<li>永久代，GC不会清理，如果一直加载类会导致OOM，1.8 之后直接使用内存，使用大小受物理内存的限制。</li>
+</ol>
+<h5 id="垃圾的确定"><a href="#垃圾的确定" class="headerlink" title="垃圾的确定"></a>垃圾的确定</h5><ol>
+<li>引用计数器 一个对象没有任何与之关联的引用，及时引用计数器部位0，对象也不太可能用到，那么这个对象就是可回收对象</li>
+<li>可达性分析 GC roots和一个对象没有可达路径，则成该对象不可达。及时不可达两次才会被回收。</li>
+</ol>
+<h5 id="垃圾回收的算法"><a href="#垃圾回收的算法" class="headerlink" title="垃圾回收的算法"></a>垃圾回收的算法</h5><ol>
+<li><p>标记清除算法，空间利用率高（优点），碎片化严重，后续可能发生大对象找不到有效的空间（缺点）</p>
+</li>
+<li><p>复制算法，效率高，无碎片（优点），可用空间减少（缺点）。</p>
+</li>
+<li><p>标记整理算法（结合标记清理和复制算法），标记后将存活的对象复制到另外一端。</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">不同的对象划分不同的域，每个域采用不同的清理算法。提高垃圾回收效率</span><br></pre></td></tr></table></figure>
+
+<img src="/blog/2020/03/21/java-base-2020-03-21-Java-JVM%E5%9F%BA%E7%A1%80/JVM.clean.png" class="" title="JVM">
+
+<h5 id="JAVA中4中引用类型"><a href="#JAVA中4中引用类型" class="headerlink" title="JAVA中4中引用类型"></a>JAVA中4中引用类型</h5><ol>
+<li>强引用：把一个对象复制给一个引用变量，该引用变量是强引用。那么该对象永不被回收。因此强引用是造成内存泄露的主要原因。</li>
+<li>软引用：通过SoftReference实现，系统内存足够不会回收，系统空间不足，进行回收</li>
+<li>弱引用：通过WeakReference，GC执行，不管空间是否足够，就会回收。</li>
+<li>虚引用：通过PhantomReference实现，不能独立实现，需要引用队列联合使用，虚引用的主要作用是跟踪对象被垃圾回收的状态。</li>
+</ol>
+<h5 id="分区收集算法"><a href="#分区收集算法" class="headerlink" title="分区收集算法"></a>分区收集算法</h5><blockquote>
+<p>分区算法将整个堆分为连续不同的小区间，每个小区间独立使用，根据停顿的时间合理的回收小区间，减少GC停顿时间。</p>
+</blockquote>
+<h5 id="垃圾回收器介绍"><a href="#垃圾回收器介绍" class="headerlink" title="垃圾回收器介绍"></a>垃圾回收器介绍</h5><ol>
+<li>Serial 单线程复制算法垃圾回收器，进行垃圾回收的同时暂停所有线程。虚拟机在client模式下的新生代垃圾回收器</li>
+<li>ParNew ：Serial+多线程，工作的同时也需要暂停其他工作线程。Server模式下新生代垃圾算法。</li>
+<li>Parallel Scavenge 多线程复制高效,关注系统的吞吐量，自适应调节策略是跟Parnew一个重要区别</li>
+<li>Serial Old：是Serial垃圾收集器的老年代版本，单线程标记整理算法，client模式下老年代垃圾清理算法。</li>
+<li>Parallel Old收集器：为了在年老同样提供吞吐量优先的垃圾收集器</li>
+<li>CMS(多线程收集器)老年代：主要目的为了获取最短的垃圾回收停顿时间 （1.初始标记，2并发标记 3重新标记，4并发清理，5线程重置）</li>
+<li>G1 （分区垃圾回收） 优点：标记整理，不产生碎片，精确控制时间，减少停顿。</li>
+</ol>
+<h5 id="JAVA-IO模型"><a href="#JAVA-IO模型" class="headerlink" title="JAVA IO模型"></a>JAVA IO模型</h5><ol>
+<li><p>阻塞IO：用户线程处于阻塞状态，只要系统线程就绪把数据copy到用户线程</p>
+</li>
+<li><p>非阻塞IO模型：如果系统线程数据没有准备好，用户线程读取的数据一直是error，用户线程不断去读，直到系统线程准备的数据就绪。非阻塞IO模型会占用系统CPU</p>
+</li>
+<li><p>多路复用IO，一个系统线程管理多个socket状态，只有socket真正有读写事件时才会调用IO读写操作，因此适合连接数比较多的情况（NIO就是多路复用IO模型）</p>
+</li>
+<li><p>信号驱动IO：系统线程准备好数据，会给用户线程发信号，用户线程收到信号就可以操作读写。</p>
+</li>
+<li><p>异步IO模型：理想IO模型，用户进程发送读写请求，系统进程帮助用户进程copy数据，完事时候给用户进程发送一个信号。</p>
+<blockquote>
+<p>异步IO需要操作系统支持,IO是面向流的,NIO是面向缓冲的</p>
+</blockquote>
+</li>
+</ol>
+<h5 id="JAVA-NIO"><a href="#JAVA-NIO" class="headerlink" title="JAVA NIO"></a>JAVA NIO</h5><ol>
+<li>Channel(管道):Stream是单项的,Channel是双向的,1FileChannel 2DatagramChannel 3SocketChannel 4ServerSocketChannel</li>
+<li>Buffer(缓冲):ByteBuffer IntBuffer CharBuffer LongBuffer DoubleBuffer FloatBuffer ShortBuffer.</li>
+<li>Selector(选择器):Selector检测注册在通道上是否有事件发生,如果有事件发生就进行相应的处理.</li>
+</ol>
+<h5 id="JVM类加载机制"><a href="#JVM类加载机制" class="headerlink" title="JVM类加载机制"></a>JVM类加载机制</h5><ol>
+<li>加载:在内存中生成代表这个类的对象,可以从jar,war包中获取,也可以运行时动态生成.</li>
+<li>验证:确保Class文件是否符合虚拟机的要求</li>
+<li>准备:方法区中分配这些变量使用的内存.</li>
+<li>解析:将常量池中的符号引用替换成直接引用.</li>
+<li>初始化:执行类构造器<client>的方法过程.执行java类中定义的代码</li>
+<li>使用</li>
+<li>卸载</li>
+</ol>
+<h5 id="JVM-类加载器"><a href="#JVM-类加载器" class="headerlink" title="JVM 类加载器"></a>JVM 类加载器</h5><ol>
+<li>启动类加载器(Bootstrap ClassLoader):lib</li>
+<li>扩展类加载器(Extend ClassLoader):lib/ext</li>
+<li>引用程序加载器(Application ClassLoader):classPath</li>
+</ol>
+<h5 id="双亲委派"><a href="#双亲委派" class="headerlink" title="双亲委派"></a>双亲委派</h5><blockquote>
+<p>当一个了类收到加载请求,不自己尝试加载这个类,而是把这个类委派给父类.保证使用不同的类加载器,得到是同一个Object对象.</p>
+</blockquote>
+<h5 id="Jstack（线程分析）"><a href="#Jstack（线程分析）" class="headerlink" title="Jstack（线程分析）"></a>Jstack（线程分析）</h5><p>分析进程中比较高的cpu的线程pid，然后查看线程中的信息</p>
+<p><a href="https://www.jianshu.com/p/6690f7e92f27" target="_blank" rel="noopener">https://www.jianshu.com/p/6690f7e92f27</a></p>
+<h5 id="JMap（内存分析）"><a href="#JMap（内存分析）" class="headerlink" title="JMap（内存分析）"></a>JMap（内存分析）</h5><p>分析java程序中堆内存的情况</p>
+<h5 id="jconsole-and-jvisualvm"><a href="#jconsole-and-jvisualvm" class="headerlink" title="jconsole and jvisualvm"></a>jconsole and jvisualvm</h5><p>远程监控java程序的监视工具，</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/Java/" rel="tag"># Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2020/03/08/java-base-2020-03-08-Java-%E5%A0%86%E6%A0%88%E6%A8%A1%E5%9E%8B/" rel="next" title="Java 乱排">
+                <i class="fa fa-chevron-left"></i> Java 乱排
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/03/22/java-base-2020-03-26-Java/" rel="prev" title="Java基础">
+                Java基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Z</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/blog/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/blog/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/blog/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#JVM-是什么"><span class="nav-number">1.</span> <span class="nav-text">JVM 是什么</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JRE-Jlib的关系"><span class="nav-number">2.</span> <span class="nav-text">JRE Jlib的关系</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程"><span class="nav-number">3.</span> <span class="nav-text">线程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JVM-内存区域"><span class="nav-number">4.</span> <span class="nav-text">JVM 内存区域</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JVM内存（栈Stack）线程私有"><span class="nav-number">5.</span> <span class="nav-text">JVM内存（栈Stack）线程私有</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JVM内存（堆Heap）线程共享"><span class="nav-number">6.</span> <span class="nav-text">JVM内存（堆Heap）线程共享</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#垃圾清理"><span class="nav-number">7.</span> <span class="nav-text">垃圾清理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#垃圾的确定"><span class="nav-number">8.</span> <span class="nav-text">垃圾的确定</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#垃圾回收的算法"><span class="nav-number">9.</span> <span class="nav-text">垃圾回收的算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JAVA中4中引用类型"><span class="nav-number">10.</span> <span class="nav-text">JAVA中4中引用类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#分区收集算法"><span class="nav-number">11.</span> <span class="nav-text">分区收集算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#垃圾回收器介绍"><span class="nav-number">12.</span> <span class="nav-text">垃圾回收器介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JAVA-IO模型"><span class="nav-number">13.</span> <span class="nav-text">JAVA IO模型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JAVA-NIO"><span class="nav-number">14.</span> <span class="nav-text">JAVA NIO</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JVM类加载机制"><span class="nav-number">15.</span> <span class="nav-text">JVM类加载机制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JVM-类加载器"><span class="nav-number">16.</span> <span class="nav-text">JVM 类加载器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#双亲委派"><span class="nav-number">17.</span> <span class="nav-text">双亲委派</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Jstack（线程分析）"><span class="nav-number">18.</span> <span class="nav-text">Jstack（线程分析）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JMap（内存分析）"><span class="nav-number">19.</span> <span class="nav-text">JMap（内存分析）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#jconsole-and-jvisualvm"><span class="nav-number">20.</span> <span class="nav-text">jconsole and jvisualvm</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Z</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

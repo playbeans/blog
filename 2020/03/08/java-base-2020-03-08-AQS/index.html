@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="创建线程的方式 Thread Runable 通过Callable和Future创建线程 Executors线程池 @Async spring异步方法  4种线程池 newFixedThreadPool:创建一个固定线程数的线程池. newCacheThreadPool:重用可以再次被使用的线程,终止并从缓存中一处50秒没有被使用的线程 newScheeduledThreadPool:创建一个线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AQS">
+<meta property="og:url" content="https://playbeans.github.io/2020/03/08/java-base-2020-03-08-AQS/index.html">
+<meta property="og:site_name" content="ATM（奥特曼）">
+<meta property="og:description" content="创建线程的方式 Thread Runable 通过Callable和Future创建线程 Executors线程池 @Async spring异步方法  4种线程池 newFixedThreadPool:创建一个固定线程数的线程池. newCacheThreadPool:重用可以再次被使用的线程,终止并从缓存中一处50秒没有被使用的线程 newScheeduledThreadPool:创建一个线程">
+<meta property="og:image" content="https://playbeans.github.io/blog/2020/03/08/java-base-2020-03-08-AQS/aqs-thread-status.png">
+<meta property="article:published_time" content="2020-03-08T01:31:01.000Z">
+<meta property="article:modified_time" content="2020-05-31T03:57:20.386Z">
+<meta property="article:author" content="Z">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://playbeans.github.io/blog/2020/03/08/java-base-2020-03-08-AQS/aqs-thread-status.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://playbeans.github.io/2020/03/08/java-base-2020-03-08-AQS/"/>
+
+
+
+
+
+  <title>AQS | ATM（奥特曼）</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ATM（奥特曼）</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://playbeans.github.io/blog/2020/03/08/java-base-2020-03-08-AQS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Z">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ATM（奥特曼）">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AQS</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-08T09:31:01+08:00">
+                2020-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h5 id="创建线程的方式"><a href="#创建线程的方式" class="headerlink" title="创建线程的方式"></a>创建线程的方式</h5><ol>
+<li>Thread</li>
+<li>Runable</li>
+<li>通过Callable和Future创建线程</li>
+<li>Executors线程池</li>
+<li>@Async spring异步方法</li>
+</ol>
+<h5 id="4种线程池"><a href="#4种线程池" class="headerlink" title="4种线程池"></a>4种线程池</h5><ol>
+<li>newFixedThreadPool:创建一个固定线程数的线程池.</li>
+<li>newCacheThreadPool:重用可以再次被使用的线程,终止并从缓存中一处50秒没有被使用的线程</li>
+<li>newScheeduledThreadPool:创建一个线程池,给定延迟后运行.</li>
+<li>newSingleThreadPool:创建只有个一个线程的线程池,线程死后会重启一个线程代替它</li>
+</ol>
+<p>1）newFixedThreadPool 和 newSingleThreadExecutor:<br>主要问题是堆积的请求处理队列可能会耗费非常大的内存，甚至 OOM。<br>2）newCachedThreadPool 和 newScheduledThreadPool:<br>主要问题是线程数最大数是 Integer.MAX_VALUE，可能会创建数量非常多的线程，甚至 OOM.</p>
+<h5 id="使用线程的场景"><a href="#使用线程的场景" class="headerlink" title="使用线程的场景"></a>使用线程的场景</h5><p>(１)　连续的操作，需要花费忍无可忍的过长时间才可能完成<br>(２)　并行计算<br>(３)　为了等待网络、文件系统、用户或其他I/O响应而耗费大量的执行时间</p>
+<h3 id="Java-AQS"><a href="#Java-AQS" class="headerlink" title="Java AQS"></a>Java AQS</h3><ul>
+<li>sychronized(基于底层c++语言实现同步机制)</li>
+<li>Aqs同步器（基于java实现）</li>
+<li>Unsafe：魔法类（绕过虚拟机，直接操作内存）</li>
+<li>LockSupport.part();释放cpu使用权</li>
+<li>notify()：随机唤醒一个线程</li>
+<li>AQS: 自旋，LoclSuport，CAS</li>
+</ul>
+<h3 id="线程池的意思"><a href="#线程池的意思" class="headerlink" title="线程池的意思"></a>线程池的意思</h3><ul>
+<li>重用存在的线程，减少线程创建，消亡的开销，提升性能。</li>
+</ul>
+<h5 id="线程的生命周期"><a href="#线程的生命周期" class="headerlink" title="线程的生命周期"></a>线程的生命周期</h5><ol>
+<li><p>New新建状态:使用new关键字创建线程之后就是新建状态,jvm为其分配内存,初始化变量</p>
+</li>
+<li><p>就绪状态(Runable):使用start方法,JVM创建方法调用栈和程序计数器</p>
+</li>
+<li><p>运行状态(Running):线程获取Cpu资源执行run方法的执行体.</p>
+</li>
+<li><p>阻塞状态:因为某转原因放弃CPU使用权限</p>
+<blockquote>
+<p>等待阻塞(wait),同步阻塞(lock),其他阻塞(sleep/join)</p>
+</blockquote>
+</li>
+<li><p>线程死亡</p>
+<blockquote>
+<p>正常死亡(run()/call()执行完成),异常结束(抛出exception或error) ,调用stop(容易发生死锁)</p>
+</blockquote>
+</li>
+</ol>
+<h5 id="终止线程的4中方法"><a href="#终止线程的4中方法" class="headerlink" title="终止线程的4中方法"></a>终止线程的4中方法</h5><ol>
+<li>正常结束</li>
+<li>使用标志位退出,</li>
+<li>interrupt退出</li>
+</ol>
+<blockquote>
+<ol>
+<li>阻塞终止,调用线程interrupt会抛出interruptException异常,捕获异常,调用break方法跳出循环</li>
+<li>非阻塞,使用标志位终止线程.</li>
+</ol>
+</blockquote>
+<ol start="4">
+<li>stop方法,stop方法结束线程很危险,如果调用会直接使锁失效,其他线程可能获取锁,从而造成数据不一致.</li>
+</ol>
+<h5 id="sleep和wait方法"><a href="#sleep和wait方法" class="headerlink" title="sleep和wait方法"></a>sleep和wait方法</h5><ol>
+<li>sleep是线程的方法,wait是Object方法.</li>
+<li>sleep是让出cpu,但是依然是监控保持者</li>
+<li>sleep不会释放锁</li>
+<li>调用wait,线程会放弃对象锁,</li>
+</ol>
+<h5 id="start和run区别"><a href="#start和run区别" class="headerlink" title="start和run区别"></a>start和run区别</h5><ol>
+<li>start启动一个线程,实现多线程,不等到run方法执行就可以继续往下执行</li>
+<li>Thread的start启动一个线程,此线程处于就绪状态</li>
+<li>线程进入运行状态,开始执行run的方法方法体</li>
+</ol>
+<h5 id="JAVA锁"><a href="#JAVA锁" class="headerlink" title="JAVA锁"></a>JAVA锁</h5><ol>
+<li>乐观锁:是一种思想,认为读多写少,一般同通过CAS实现</li>
+<li>悲观锁:认为读少写多,遇到并发的可能性高,每次读写数据都会上锁.java中的悲观锁是Synchronized,AQS下的悲观锁原则是先通过cas获取所,如果获取不到,才会转化成retreenLock</li>
+<li>自旋锁:如果持有锁的线程可能在很短的时间内释放资源,那么就没有必要使用内核态和用户态之间的切换,它们只要等一等就能获取到锁,这样子避免用户线程和内核的切换的消耗.自旋锁需要消耗CPU 优点:正确使用,提升效率,错误使用浪费CPU,1.6之后引入适应性自旋锁,适应性自旋锁:如果超过jvm认为一个上下文切换最佳的时间,则线程直接阻塞.</li>
+</ol>
+<h5 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h5><p>CAS有3个操作数，内存值V，旧的预期值A，要修改的新值B。当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做。</p>
+<h5 id="Synchronized实现"><a href="#Synchronized实现" class="headerlink" title="Synchronized实现"></a>Synchronized实现</h5><p>锁的膨胀:无锁状态-偏向锁-轻量级锁-重量级锁</p>
+<p>乐观锁:CAS</p>
+<p>自旋锁:CPU换取时间</p>
+<p>悲观锁:使用系统进程控制资源的访问</p>
+<p>偏向锁:一段代码一直被一个线程访问,那么该线程会自动获取锁.</p>
+<h5 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h5><ol>
+<li>lock()</li>
+<li>tryLock()</li>
+<li>newCondition()</li>
+<li>isFair():公平锁</li>
+<li>tryLock(Time):</li>
+<li>getQueueLength()：获取队列长度</li>
+</ol>
+<h5 id="ReentranLock-VS-synchronized"><a href="#ReentranLock-VS-synchronized" class="headerlink" title="ReentranLock VS synchronized"></a>ReentranLock VS synchronized</h5><ol>
+<li>ReentranLock必须手动通过lock和unlock进行上锁和解锁</li>
+<li>ReentrantLock相比syncronized具有中断锁,公平所,多个锁的特点.</li>
+</ol>
+<h5 id="Semaphore与ReentrantLock"><a href="#Semaphore与ReentrantLock" class="headerlink" title="Semaphore与ReentrantLock"></a>Semaphore与ReentrantLock</h5><ol>
+<li>semaphore 能完成ReentrantLock所有的工作,acquire与release方法来获取所,同时acquire也能相应中断锁,另外semaphore也能实现公平锁.</li>
+</ol>
+<h5 id="AutomicInteger"><a href="#AutomicInteger" class="headerlink" title="AutomicInteger"></a>AutomicInteger</h5><blockquote>
+<p>多线程中–i,i++等不具备原子操作,也是线程不安全的.通常使用syncronized上锁使其变成一个原子操作,但是性能很低,为了更有效率,通常使用AutomicInteger</p>
+</blockquote>
+<h5 id="可重入锁"><a href="#可重入锁" class="headerlink" title="可重入锁"></a>可重入锁</h5><blockquote>
+<p>可重入锁,一般是指外层函数获取一个锁之后,内部递归函数仍然有获取该锁的代码.Java中ReentrantLock和synchronized都是可重入锁.</p>
+</blockquote>
+<h5 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h5><blockquote>
+<p>轻量级锁主要有多线程同步交替执行</p>
+</blockquote>
+<h5 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h5><blockquote>
+<p> 只有一个线程执行同步块时,进一步提高性能.</p>
+</blockquote>
+<h5 id="分段锁"><a href="#分段锁" class="headerlink" title="分段锁"></a>分段锁</h5><ol>
+<li>减少锁时间的等待</li>
+<li>减少锁的颗粒度：将大对象拆分成小对象．典型的例子CocurrentHashMap</li>
+<li>锁分离,常见例子,读写锁.</li>
+<li>锁粗化:同一方法内多个锁锁定同一个对象,编译器会锁一个对象,好处无序频繁的申请释放锁.</li>
+<li>锁消除:在编译器阶段发现不可能被共享的对象上锁,那么编译器就会消除这个锁.</li>
+</ol>
+<h5 id="线程的基本用法"><a href="#线程的基本用法" class="headerlink" title="线程的基本用法"></a>线程的基本用法</h5><img src="/blog/2020/03/08/java-base-2020-03-08-AQS/aqs-thread-status.png" class="" title="线程状态图">
+
+<h5 id="避免死锁"><a href="#避免死锁" class="headerlink" title="避免死锁"></a>避免死锁</h5><ol>
+<li>一次只能获取一个锁</li>
+<li>减少锁的等待时长</li>
+<li>减少嵌套锁</li>
+</ol>
+<h5 id="线程上下文的切换"><a href="#线程上下文的切换" class="headerlink" title="线程上下文的切换"></a>线程上下文的切换</h5><p>任务状态的保存及再加载,这段过程就叫做上线文切换.</p>
+<h5 id="线程池的原理"><a href="#线程池的原理" class="headerlink" title="线程池的原理"></a>线程池的原理</h5><p>线程复用，控制并发，管理线程</p>
+<h5 id="线程池的组成"><a href="#线程池的组成" class="headerlink" title="线程池的组成"></a>线程池的组成</h5><ol>
+<li>线程池管理器:用于创建线程池</li>
+<li>工作线程:线程池中的线程</li>
+<li>任务队列:用于存放待处理的任务,提供的一种缓冲机制.</li>
+</ol>
+<h5 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h5><ol>
+<li>corePoolSize:核心线程大小</li>
+<li>maxPoolSize:最大线程大小</li>
+<li>keepAliveTime:线程池数量超过corePoolSize,多余的空闲线程的存活时间</li>
+<li>unit:keepAliveTime的单位</li>
+<li>workQueue:工作线程</li>
+<li>threadFactory:线程工厂</li>
+<li>handler:拒绝策略(任务来不及处理,应该如何拒绝)</li>
+</ol>
+<h5 id="拒绝策略"><a href="#拒绝策略" class="headerlink" title="拒绝策略"></a>拒绝策略</h5><ol>
+<li>AbortPOlicy:直接抛异常</li>
+<li>CallerRunPolicy:再调用者线程中运行当前任务.性能急剧下降,</li>
+<li>DiscardOldestPolicy:丢弃最老的一个</li>
+<li>DiscardPolicy:默默的丢弃一个,不处理</li>
+</ol>
+<h5 id="线程池工作原理"><a href="#线程池工作原理" class="headerlink" title="线程池工作原理"></a>线程池工作原理</h5><ol>
+<li><p>线程池刚创建时,里面没有一个线程。任务队列是作为参数传进来的。不过,就算队列里面<br>有任务,线程池也不会马上执行它们。</p>
+</li>
+<li><p>当调用 execute() 方法添加一个任务时,线程池会做如下判断:</p>
+<ul>
+<li>如果正在运行的线程数量小于 corePoolSize,那么马上创建线程运行这个任务;</li>
+<li>如果正在运行的线程数量大于或等于 corePoolSize,那么将这个任务放入队列;</li>
+<li>如果这时候队列满了,而且正在运行的线程数量小于 maximumPoolSize,那么还是要<br>创建非核心线程立刻运行这个任务;</li>
+<li>如果队列满了,而且正在运行的线程数量大于或等于 maximumPoolSize,那么线程池<br>会抛出异常 RejectExecutionException。</li>
+</ul>
+</li>
+<li><p>当一个线程完成任务时,它会从队列中取下一个任务来执行。</p>
+</li>
+<li><p>当一个线程无事可做,超过一定的时间(keepAliveTime)时,线程池会判断,如果当前运<br>行的线程数大于 corePoolSize,那么这个线程就被停掉。所以线程池的所有任务完成后,它<br>最终会收缩到 corePoolSize 的大小。</p>
+</li>
+</ol>
+<h5 id="java中的阻塞队列"><a href="#java中的阻塞队列" class="headerlink" title="java中的阻塞队列"></a>java中的阻塞队列</h5><ol>
+<li><em>ArrayBlockingQueue :由数组结构组成的有界阻塞队列。</em></li>
+<li><em>LinkedBlockingQueue :由链表结构组成的有界阻塞队列。</em></li>
+<li><em>PriorityBlockingQueue :支持优先级排序的无界阻塞队列。</em></li>
+<li>DelayQueue:使用优先级队列实现的无界阻塞队列。</li>
+<li>SynchronousQueue:不存储元素的阻塞队列。</li>
+<li>LinkedTransferQueue:由链表结构组成的无界阻塞队列。</li>
+<li>LinkedBlockingDeque:由链表结构组成的双向阻塞队列</li>
+</ol>
+<h5 id="java-valatile关键字"><a href="#java-valatile关键字" class="headerlink" title="java valatile关键字"></a>java valatile关键字</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 重排序:重排序是指编译器为了优化代码,对指令进行重新排序</span><br><span class="line">2. 原子性:操作不能分割,不可中断</span><br><span class="line">3. 可见性:锁提供了两种特性,互斥性(互斥既一次只能允许一个线程持有某个特定的锁)和可见性(一个线程释放锁之前修改的数据,对即将修改的线程可见)</span><br></pre></td></tr></table></figure>
+
+<p>valatile保证禁止重拍,不保证原子性,可见性.可以实现比Sychronized更加轻量级的锁.正例子:使用终端标示结束另一个线程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JMM解决了可见性和有序性,而锁解决了原子性</span><br></pre></td></tr></table></figure>
+
+<h5 id="threadLocal作用"><a href="#threadLocal作用" class="headerlink" title="threadLocal作用"></a>threadLocal作用</h5><ol>
+<li>减少同一个线程内多个函数,或者组件之间的传值</li>
+<li>通过为每个线程提供一个独立的变量来解决变量并发访问的冲突问题</li>
+<li>常见的场景,解决数据库链接,Seesion管理</li>
+</ol>
+<h5 id="Synchronized和ReentrantLock"><a href="#Synchronized和ReentrantLock" class="headerlink" title="Synchronized和ReentrantLock"></a>Synchronized和ReentrantLock</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1.都是重入锁</span><br><span class="line">2.保证可见性和互斥性</span><br><span class="line"></span><br><span class="line">1. Lock显示获取释放锁,sychronized隐获取锁</span><br><span class="line">2. Lock可相应中断锁,synchronize不可以相应终端锁</span><br><span class="line">3. Lock 是API界别的,synchronize是JVM级别的</span><br><span class="line">4. Lock可实现公平锁</span><br><span class="line">5. Lock可以知道有没有获取到锁</span><br><span class="line">6. Lock可以实现读写锁</span><br></pre></td></tr></table></figure>
+
+<h5 id="Java中用到的线程调度"><a href="#Java中用到的线程调度" class="headerlink" title="Java中用到的线程调度"></a>Java中用到的线程调度</h5><ol>
+<li>抢占式调度:各个线程抢占资源,一个线程阻塞不会导致整个进程阻塞</li>
+<li>协同调度:多个线程依次执行,一个线程阻塞可能会影响其他的线程阻塞</li>
+</ol>
+<h5 id="进程调度算法"><a href="#进程调度算法" class="headerlink" title="进程调度算法"></a>进程调度算法</h5><ol>
+<li>FCFS(先来先服务)调度算法,算法比较简单基本上实现公平</li>
+<li>短作业有限调度算法,从即将运行的队列中获取一个估计时间最短的作业</li>
+</ol>
+<h5 id="优先级调度算法"><a href="#优先级调度算法" class="headerlink" title="优先级调度算法"></a>优先级调度算法</h5><ol>
+<li>抢占式优先权调度算法:把处理机给优先权高的线程,如果突然出现一个优先级更高的线程,那么会处理更高的进程</li>
+<li>高优先权优先调度算法:响应时间/服务要求时间</li>
+</ol>
+<h5 id="AQS抽象同步器"><a href="#AQS抽象同步器" class="headerlink" title="AQS抽象同步器"></a>AQS抽象同步器</h5><p>一套多线程访问共享资源的同步框架:ReentrantLock,countDownLatch,Semaphore</p>
+<h5 id="线程池的线程数量怎么确定"><a href="#线程池的线程数量怎么确定" class="headerlink" title="线程池的线程数量怎么确定"></a>线程池的线程数量怎么确定</h5><ol>
+<li>cpu密集型线程大小定义为N+1</li>
+<li>io密集型,线程大小定义为2N+1</li>
+</ol>
+<h5 id="进程的组成部分"><a href="#进程的组成部分" class="headerlink" title="进程的组成部分"></a>进程的组成部分</h5><ol>
+<li>PCB (程序控制块):进程描述,资源分配,进程控制管理信息</li>
+<li>程序段:存放执行的代码</li>
+<li>数据段:存放线程执行过程的局部变量,全局变量</li>
+</ol>
+<h5 id="进程的5通信方式"><a href="#进程的5通信方式" class="headerlink" title="进程的5通信方式"></a>进程的5通信方式</h5><ol>
+<li>无名管道:数据只往一个方向流动,存在内存中</li>
+<li>FIFO命名管道:一种文件类型,可以实现无关进程之间的通信</li>
+<li>消息队列:</li>
+<li>信号量:不能传递复杂的消息,只能用来同步</li>
+<li>共享内存:容易控制,速度快,但是要保持同步</li>
+</ol>
+<h5 id="死锁的4个条件"><a href="#死锁的4个条件" class="headerlink" title="死锁的4个条件"></a>死锁的4个条件</h5><ol>
+<li>互斥条件:一个资源只能一个线程使用</li>
+<li>请求与保持:一个线程因为请求资源阻塞,对已经获取的资源保持不放</li>
+<li>不剥夺条件:进程已经获得的资源,在未使用前,不允许剥夺</li>
+<li>循环等待:若干个线程形成一种头尾链接的循环等待</li>
+</ol>
+<h5 id="如何避免（预防）死锁"><a href="#如何避免（预防）死锁" class="headerlink" title="如何避免（预防）死锁"></a>如何避免（预防）死锁</h5><ol>
+<li>破坏“请求和保持”条件：让进程在申请资源时，一次性申请所有需要用到的资源，不要一次一次来申请，当申请的资源有一些没空，那就让线程等待。不过这个方法比较浪费资源，进程可能经常处于饥饿状态。还有一种方法是，要求进程在申请资源前，要释放自己拥有的资源。</li>
+<li>破坏“不可抢占”条件：允许进程进行抢占，方法一：如果去抢资源，被拒绝，就释放自己的资源。方法二：操作系统允许抢，只要你优先级大，可以抢到。</li>
+<li>破坏“循环等待”条件：将系统中的所有资源统一编号，进程可在任何时刻提出资源申请，但所有申请必须按照资源的编号顺序提出（指定获取锁的顺序，顺序加锁）。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/Java/" rel="tag"># Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/10/03/redis%E5%AE%9E%E6%88%98%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-2019-10-03-Redis%E5%AE%9E%E6%88%98%E7%AC%AC%E4%B8%80%E8%8A%82/" rel="next" title="Redis实战第一节笔记">
+                <i class="fa fa-chevron-left"></i> Redis实战第一节笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/03/08/java-base-2020-03-08-Mysql/" rel="prev" title="Mysql">
+                Mysql <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Z</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/blog/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/blog/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/blog/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建线程的方式"><span class="nav-number">1.</span> <span class="nav-text">创建线程的方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4种线程池"><span class="nav-number">2.</span> <span class="nav-text">4种线程池</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用线程的场景"><span class="nav-number">3.</span> <span class="nav-text">使用线程的场景</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-AQS"><span class="nav-number"></span> <span class="nav-text">Java AQS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池的意思"><span class="nav-number"></span> <span class="nav-text">线程池的意思</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#线程的生命周期"><span class="nav-number">1.</span> <span class="nav-text">线程的生命周期</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#终止线程的4中方法"><span class="nav-number">2.</span> <span class="nav-text">终止线程的4中方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#sleep和wait方法"><span class="nav-number">3.</span> <span class="nav-text">sleep和wait方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#start和run区别"><span class="nav-number">4.</span> <span class="nav-text">start和run区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JAVA锁"><span class="nav-number">5.</span> <span class="nav-text">JAVA锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#CAS"><span class="nav-number">6.</span> <span class="nav-text">CAS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Synchronized实现"><span class="nav-number">7.</span> <span class="nav-text">Synchronized实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ReentrantLock"><span class="nav-number">8.</span> <span class="nav-text">ReentrantLock</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ReentranLock-VS-synchronized"><span class="nav-number">9.</span> <span class="nav-text">ReentranLock VS synchronized</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Semaphore与ReentrantLock"><span class="nav-number">10.</span> <span class="nav-text">Semaphore与ReentrantLock</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AutomicInteger"><span class="nav-number">11.</span> <span class="nav-text">AutomicInteger</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#可重入锁"><span class="nav-number">12.</span> <span class="nav-text">可重入锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#轻量级锁"><span class="nav-number">13.</span> <span class="nav-text">轻量级锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#偏向锁"><span class="nav-number">14.</span> <span class="nav-text">偏向锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#分段锁"><span class="nav-number">15.</span> <span class="nav-text">分段锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程的基本用法"><span class="nav-number">16.</span> <span class="nav-text">线程的基本用法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#避免死锁"><span class="nav-number">17.</span> <span class="nav-text">避免死锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程上下文的切换"><span class="nav-number">18.</span> <span class="nav-text">线程上下文的切换</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程池的原理"><span class="nav-number">19.</span> <span class="nav-text">线程池的原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程池的组成"><span class="nav-number">20.</span> <span class="nav-text">线程池的组成</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ThreadPoolExecutor"><span class="nav-number">21.</span> <span class="nav-text">ThreadPoolExecutor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#拒绝策略"><span class="nav-number">22.</span> <span class="nav-text">拒绝策略</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程池工作原理"><span class="nav-number">23.</span> <span class="nav-text">线程池工作原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#java中的阻塞队列"><span class="nav-number">24.</span> <span class="nav-text">java中的阻塞队列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#java-valatile关键字"><span class="nav-number">25.</span> <span class="nav-text">java valatile关键字</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#threadLocal作用"><span class="nav-number">26.</span> <span class="nav-text">threadLocal作用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Synchronized和ReentrantLock"><span class="nav-number">27.</span> <span class="nav-text">Synchronized和ReentrantLock</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Java中用到的线程调度"><span class="nav-number">28.</span> <span class="nav-text">Java中用到的线程调度</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#进程调度算法"><span class="nav-number">29.</span> <span class="nav-text">进程调度算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#优先级调度算法"><span class="nav-number">30.</span> <span class="nav-text">优先级调度算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AQS抽象同步器"><span class="nav-number">31.</span> <span class="nav-text">AQS抽象同步器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#线程池的线程数量怎么确定"><span class="nav-number">32.</span> <span class="nav-text">线程池的线程数量怎么确定</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#进程的组成部分"><span class="nav-number">33.</span> <span class="nav-text">进程的组成部分</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#进程的5通信方式"><span class="nav-number">34.</span> <span class="nav-text">进程的5通信方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#死锁的4个条件"><span class="nav-number">35.</span> <span class="nav-text">死锁的4个条件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如何避免（预防）死锁"><span class="nav-number">36.</span> <span class="nav-text">如何避免（预防）死锁</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Z</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

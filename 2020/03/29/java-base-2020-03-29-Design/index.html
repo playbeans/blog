@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="设计模式," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="设计模式分类 创建模式   工厂模式,抽象工厂,生成器模式,原型模式   结构模式   适配器模式,桥接模式,组成模式,装饰模式,外观模式,享元模式,代理模式    行为模式   中介模式,命令模式,备忘录模式,观察者模式,状态模式,策略模式,迭代器模式,访问者模式,责任链模式  6大设计原则 单一职责:一个类只完成一个功能,如果做不到类只完成一个功能,最少要保证一个方法完成一个功能.Single">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Design">
+<meta property="og:url" content="https://playbeans.github.io/2020/03/29/java-base-2020-03-29-Design/index.html">
+<meta property="og:site_name" content="ATM（奥特曼）">
+<meta property="og:description" content="设计模式分类 创建模式   工厂模式,抽象工厂,生成器模式,原型模式   结构模式   适配器模式,桥接模式,组成模式,装饰模式,外观模式,享元模式,代理模式    行为模式   中介模式,命令模式,备忘录模式,观察者模式,状态模式,策略模式,迭代器模式,访问者模式,责任链模式  6大设计原则 单一职责:一个类只完成一个功能,如果做不到类只完成一个功能,最少要保证一个方法完成一个功能.Single">
+<meta property="article:published_time" content="2020-03-29T11:39:05.000Z">
+<meta property="article:modified_time" content="2020-05-31T02:24:09.602Z">
+<meta property="article:author" content="Z">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://playbeans.github.io/2020/03/29/java-base-2020-03-29-Design/"/>
+
+
+
+
+
+  <title>Design | ATM（奥特曼）</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ATM（奥特曼）</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://playbeans.github.io/blog/2020/03/29/java-base-2020-03-29-Design/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Z">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ATM（奥特曼）">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Design</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-29T19:39:05+08:00">
+                2020-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="设计模式分类"><a href="#设计模式分类" class="headerlink" title="设计模式分类"></a>设计模式分类</h4><ol>
+<li>创建模式</li>
+</ol>
+<blockquote>
+<p>工厂模式,抽象工厂,生成器模式,原型模式</p>
+</blockquote>
+<ol start="2">
+<li>结构模式</li>
+</ol>
+<blockquote>
+<p>适配器模式,桥接模式,组成模式,装饰模式,外观模式,享元模式,代理模式 </p>
+</blockquote>
+<ol start="3">
+<li>行为模式</li>
+</ol>
+<blockquote>
+<p>中介模式,命令模式,备忘录模式,观察者模式,状态模式,策略模式,迭代器模式,访问者模式,责任链模式</p>
+</blockquote>
+<h4 id="6大设计原则"><a href="#6大设计原则" class="headerlink" title="6大设计原则"></a>6大设计原则</h4><ol>
+<li>单一职责:一个类只完成一个功能,如果做不到类只完成一个功能,最少要保证一个方法完成一个功能.Single Responsibility Principle，简称是SRP。</li>
+<li>依赖倒置:高层依赖应该依赖接口,而不应该依赖具体的实现.Dependence Inversion Principle,DIP</li>
+<li>里氏替换:凡是父类出现的地方都可以用子类替换,并且原功能没有发生变化,子类不应该覆盖父类的抽象方法.Liskov Substitution Principle，LSP</li>
+<li>迪米特法则:一个类要尽量的封装自己,一个类只与自己的朋友类打交道.Law of Demeter，LoD</li>
+<li>接口隔离原则:一个接口完成后功能尽可能单一,不要让一个接口承担过多的责任.Interface Segregation Principle</li>
+<li>开闭原则:对扩展开放,对修改关闭Open Closed Principle</li>
+</ol>
+<h4 id="23种设计模式"><a href="#23种设计模式" class="headerlink" title="23种设计模式"></a>23种设计模式</h4><h5 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式:"></a>工厂模式:</h5><h5 id="抽象工厂"><a href="#抽象工厂" class="headerlink" title="抽象工厂"></a>抽象工厂</h5><h5 id="模板方法"><a href="#模板方法" class="headerlink" title="模板方法"></a>模板方法</h5><h5 id="建造者模式"><a href="#建造者模式" class="headerlink" title="建造者模式"></a>建造者模式</h5><p>把一个复杂的对象的构建与表示分开,使得构建方法相同,构建顺序不同,构建出来的类也不同</p>
+<h5 id="代理设计模式"><a href="#代理设计模式" class="headerlink" title="代理设计模式"></a>代理设计模式</h5><p>代理模式分为两种,普通代理,和强制代理,</p>
+<p>普通代理:可以直接通过代理类去代理类</p>
+<p>强制代理:一定要找到该类,才能使用该类的代理方法</p>
+<blockquote>
+<p>Spring IOC 和APO都使用了代理设计模式</p>
+</blockquote>
+<h5 id="原型设计模式"><a href="#原型设计模式" class="headerlink" title="原型设计模式"></a>原型设计模式</h5><p>通过对象复制来实现的模式就是原型模式,原型模式的核心试试clone方法</p>
+<p>优点:性能优良,比new一个对象性能要好.</p>
+<h5 id="中介模式"><a href="#中介模式" class="headerlink" title="中介模式"></a>中介模式</h5><p>封装一系列对象的交互,由原先的网格状交互变成星状交互.</p>
+<blockquote>
+<p>优点:减少类与类之间的依赖,</p>
+<p>缺点:中介者类会变得很膨胀</p>
+</blockquote>
+<h5 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h5><p>类之间的解耦,容易扩展,一般GUI开发,一个按钮就是一个点击命令   </p>
+<blockquote>
+<p>Receiver:接收者，干活的角色，命令执行到这里被执行</p>
+<p>Command：所有执行者在这里声明</p>
+<p>Invoker：调用者执行Command的抽象方法</p>
+</blockquote>
+<h5 id="责任链模式"><a href="#责任链模式" class="headerlink" title="责任链模式"></a>责任链模式</h5><p>责任连的优点是把请求和处理分开,请求者可以不知道谁处理,处理者可以不用知道请求的全貌.</p>
+<blockquote>
+<p>缺点是:性能问题,每个请求从头到尾,调试不方便,一般做法是设置一个最长调用链</p>
+</blockquote>
+<h5 id="装饰模式"><a href="#装饰模式" class="headerlink" title="装饰模式"></a>装饰模式</h5><p>动态的给一个对象添加额外的职责, </p>
+<p>使用场景:</p>
+<ol>
+<li>扩展一个了类,给一个类增加附加功能</li>
+<li>动态给一个类增加功能,这些功能可以再动态的撤销</li>
+</ol>
+<p>缺点:</p>
+<ol>
+<li>多层的装饰比较复杂,不容易排查问题</li>
+</ol>
+<h5 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h5><blockquote>
+<p>Context封装角色：</p>
+<p>Strategy：抽象策略角色</p>
+<p>ConcreteStrategy：具体策略角色</p>
+</blockquote>
+<h5 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h5><p>一个不同的类，通过继承修改同时满足另一个类的要求。</p>
+<blockquote>
+<p>适配器是一补救模式，通常解决接口不相容的问题，</p>
+</blockquote>
+<h5 id="迭代器设计模式"><a href="#迭代器设计模式" class="headerlink" title="迭代器设计模式"></a>迭代器设计模式</h5><p>循环输出</p>
+<h5 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h5><p>组合模式也叫合成模式,有时也叫部分整体模式,主要用来藐视部分和整体的关系,只要是体现局部跟整体的关系的时候,都可以考虑下组合模式.</p>
+<h5 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h5><p>观察者模式也叫作发布订阅模式,它是一个在项目中经常使用到的模式.(定义对象间一种一对多的依赖关系,使得每当一个对象改变状态,则依赖的对象都会得到通知并且更新)</p>
+<blockquote>
+<ol>
+<li>Subject:被观察者</li>
+<li>Observer:观察者</li>
+<li>ConcreteSubject:具体被观察者</li>
+<li>ConcreteObserver:具体的观察者</li>
+</ol>
+</blockquote>
+<p>优点:建立一套触发机智,</p>
+<p>缺点:触发机制连过长,开发调试比较难,一个观察者卡壳,影响整体的执行效率,通常使用异步的方式.</p>
+<p>实践:</p>
+<ol>
+<li>文件系统,</li>
+<li>AMT取款机</li>
+</ol>
+<h5 id="门面模式"><a href="#门面模式" class="headerlink" title="门面模式"></a>门面模式</h5><p>门面模式也叫做外观模式,是一种比较常用的封装模式</p>
+<p>优点:</p>
+<blockquote>
+<p>减少系统见的相互依赖,<br>提高灵活性<br>提高安全性</p>
+</blockquote>
+<p>缺点:</p>
+<blockquote>
+<p>不符合开闭原则,对修改开放,对扩展关闭,稍有改动,影响极大</p>
+</blockquote>
+<p>场景:</p>
+<ol>
+<li>为一个复杂的模块或子系统提供一个外界访问的借口</li>
+<li>子系统相对外界比较独立</li>
+<li>预防低水平开发人员带来的风险扩散</li>
+</ol>
+<h5 id="备忘录模式"><a href="#备忘录模式" class="headerlink" title="备忘录模式"></a>备忘录模式</h5><p> 使用场景:</p>
+<ol>
+<li>可以保存恢复数据的操作,</li>
+<li>提供回滚的操作</li>
+<li>数据库的事物管理就是备忘录模式</li>
+</ol>
+<p>注意事项:</p>
+<ol>
+<li>不要频繁的创建备忘对象,因为建立大对象需要消耗资源</li>
+</ol>
+<h5 id="访问者模式"><a href="#访问者模式" class="headerlink" title="访问者模式"></a>访问者模式</h5><ol>
+<li>Visitor:抽象者</li>
+<li>ConcreteVisitor:具体抽象者</li>
+<li>Element:抽象元素</li>
+<li>ConcreteElement:具体元素</li>
+<li>ObjectStruture:结构对象</li>
+</ol>
+<p>优点:</p>
+<ol>
+<li>符合单一原则</li>
+<li>优秀的扩展性</li>
+<li>灵活度高</li>
+</ol>
+<p>缺点:</p>
+<ol>
+<li>访问类关注了其他类的内部,不符合迪米特法则 </li>
+<li>具体元素变更比较困难</li>
+<li>报表运算,UI展示</li>
+</ol>
+<p>场景:</p>
+<p>对迭代器模式的扩充,可以遍历不同的类</p>
+<h5 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h5><ol>
+<li>State:抽象状态</li>
+<li>ConcreteState:具体状态</li>
+<li>Context:环境角色</li>
+</ol>
+<p>状态模式引起的行为变更,看起来就好像这个对象对应的类发生一样.</p>
+<p>优点:</p>
+<ol>
+<li><p>避免多过得的if else语句</p>
+</li>
+<li><p>封装性好</p>
+</li>
+<li><p>遵循设计原则</p>
+<p>场景:</p>
+<ol>
+<li>行为随着状态的改变而改变</li>
+<li>大量的if else语句替换着</li>
+</ol>
+</li>
+</ol>
+<h5 id="解释器模式"><a href="#解释器模式" class="headerlink" title="解释器模式"></a>解释器模式</h5><p>解释器是一个简单的语法分析工具,他的有点事扩展性,</p>
+<p>使用最少,引起效率问题.</p>
+<h5 id="享元模式"><a href="#享元模式" class="headerlink" title="享元模式"></a>享元模式</h5><p>减少内存的分配</p>
+<p>场景:</p>
+<ol>
+<li>大量相似的对象</li>
+<li>需要缓冲池的场景</li>
+<li>d</li>
+</ol>
+<p>策略模式和命令模式的区别</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">策略模式是通过不同的算法做同一件事情：例如排序</span><br><span class="line"></span><br><span class="line">而命令模式则是通过不同的命令做不同的事情，常含有（关联）接收者。</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2020/03/29/java-base-2020-03-29-Zookeeper/" rel="next" title="Zookeeper">
+                <i class="fa fa-chevron-left"></i> Zookeeper
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/04/05/wanttodo/" rel="prev" title="todo">
+                todo <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Z</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/blog/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/blog/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/blog/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#设计模式分类"><span class="nav-number">1.</span> <span class="nav-text">设计模式分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6大设计原则"><span class="nav-number">2.</span> <span class="nav-text">6大设计原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#23种设计模式"><span class="nav-number">3.</span> <span class="nav-text">23种设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#工厂模式"><span class="nav-number">3.1.</span> <span class="nav-text">工厂模式:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#抽象工厂"><span class="nav-number">3.2.</span> <span class="nav-text">抽象工厂</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#模板方法"><span class="nav-number">3.3.</span> <span class="nav-text">模板方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#建造者模式"><span class="nav-number">3.4.</span> <span class="nav-text">建造者模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#代理设计模式"><span class="nav-number">3.5.</span> <span class="nav-text">代理设计模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#原型设计模式"><span class="nav-number">3.6.</span> <span class="nav-text">原型设计模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#中介模式"><span class="nav-number">3.7.</span> <span class="nav-text">中介模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#命令模式"><span class="nav-number">3.8.</span> <span class="nav-text">命令模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#责任链模式"><span class="nav-number">3.9.</span> <span class="nav-text">责任链模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#装饰模式"><span class="nav-number">3.10.</span> <span class="nav-text">装饰模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#策略模式"><span class="nav-number">3.11.</span> <span class="nav-text">策略模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#适配器模式"><span class="nav-number">3.12.</span> <span class="nav-text">适配器模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#迭代器设计模式"><span class="nav-number">3.13.</span> <span class="nav-text">迭代器设计模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#组合模式"><span class="nav-number">3.14.</span> <span class="nav-text">组合模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#观察者模式"><span class="nav-number">3.15.</span> <span class="nav-text">观察者模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#门面模式"><span class="nav-number">3.16.</span> <span class="nav-text">门面模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#备忘录模式"><span class="nav-number">3.17.</span> <span class="nav-text">备忘录模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#访问者模式"><span class="nav-number">3.18.</span> <span class="nav-text">访问者模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#状态模式"><span class="nav-number">3.19.</span> <span class="nav-text">状态模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解释器模式"><span class="nav-number">3.20.</span> <span class="nav-text">解释器模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#享元模式"><span class="nav-number">3.21.</span> <span class="nav-text">享元模式</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Z</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
